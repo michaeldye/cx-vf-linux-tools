@@ -1,0 +1,23 @@
+[Unit]
+Description=Create Mellanox Connectx-5 VFs not bound to the host
+Requires=openibd.service
+After=openibd.service
+Before=libvirtd.service network.target
+
+# N.B. This will be true when the glob matches any file
+ConditionPathExistsGlob=/sys/class/infiniband/mlx5_*/device/sriov_numvfs
+
+[Service]
+RemainAfterExit=yes
+EnvironmentFile=/etc/default/mlx5-vfs.env
+ExecStart=/usr/local/bin/mlxvfsetup.sh
+StandardOutput=journal
+
+Restart=always
+RestartSec=10
+StartLimitBurst=5
+StartLimitInterval=33
+
+
+[Install]
+WantedBy=network.target
